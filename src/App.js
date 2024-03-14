@@ -1,31 +1,73 @@
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import { useState } from "react";
 import bakeryData from "./assets/bakery-data.json";
 
-/* ####### DO NOT TOUCH -- this makes the image URLs work ####### */
+// Ensure image URLs work
 bakeryData.forEach((item) => {
-  item.image = process.env.PUBLIC_URL + "/" + item.image;
+    item.image = process.env.PUBLIC_URL + "/" + item.image;
 });
-/* ############################################################## */
 
 function App() {
-  // TODO: use useState to create a state variable to hold the state of the cart
-  /* add your cart state code here */
+    // State variables
+    const [bakeryItems, setBakeryItems] = useState(bakeryData);
+    const [cartItems, setCartItems] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
 
-  return (
-    <div className="App">
-      <h1>My Bakery</h1> {/* TODO: personalize your bakery (if you want) */}
+    // Load data
+    const loadData = () => {
+        setBakeryItems(bakeryData);
+    };
 
-      {bakeryData.map((item, index) => ( // TODO: map bakeryData to BakeryItem components
-        <p>Bakery Item {index}</p> // replace with BakeryItem component
-      ))}
+    useEffect(() => {
+        // Load data when the component mounts
+        loadData();
+    }, [cartItems]); // Reload data when cart items change
 
-      <div>
-        <h2>Cart</h2>
-        {/* TODO: render a list of items in the cart */}
-      </div>
-    </div>
-  );
+    // Add item to cart
+    const addToCart = (price, name) => {
+        // Update total price
+        setTotalPrice((prevTotal) => prevTotal + price);
+        // Add item to cart
+        setCartItems((prevCart) => [...prevCart, name]);
+    };
+
+    // Render bakery items
+    const renderBakeryItems = () => {
+        return bakeryItems.map((item, index) => (
+            <div key={index}>
+                {/* Click event to add item to cart */}
+                <p onClick={() => addToCart(item.price, item.name)}>
+                    {item.name}, {item.description}, {item.price}
+                </p>
+                {/* Display item image */}
+                <img src={item.image} alt="image" />
+            </div>
+        ));
+    };
+
+    // Render cart items
+    const renderCartItems = () => {
+        if (cartItems.length === 0) {
+            return <p>Cart is empty</p>;
+        }
+        return cartItems.map((name, index) => <p key={index}>{name}</p>);
+    };
+
+    return (
+        <div className="App">
+            <h1>Itzy's Bakery</h1>
+
+            {/* Render bakery items */}
+            {renderBakeryItems()}
+
+            <div>
+                <h2>Cart</h2>
+                {/* Render cart items */}
+                Total Price: {totalPrice}
+                {renderCartItems()}
+            </div>
+        </div>
+    );
 }
 
 export default App;
