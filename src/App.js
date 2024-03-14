@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import bakeryData from "./assets/bakery-data.json";
+import BakeryItem from "./components/BakeryItem";
 
 // Ensure image URLs work
 bakeryData.forEach((item) => {
@@ -31,41 +32,23 @@ function App() {
         setCartItems((prevCart) => [...prevCart, name]);
     };
 
-    // Render bakery items
-    const renderBakeryItems = () => {
-        return bakeryItems.map((item, index) => (
-            <div key={index}>
-                {/* Click event to add item to cart */}
-                <p onClick={() => addToCart(item.price, item.name)}>
-                    {item.name}, {item.description}, {item.price}
-                </p>
-                {/* Display item image */}
-                <img src={item.image} alt="image" />
-            </div>
-        ));
-    };
-
-    // Render cart items
-    const renderCartItems = () => {
-        if (cartItems.length === 0) {
-            return <p>Cart is empty</p>;
-        }
-        return cartItems.map((name, index) => <p key={index}>{name}</p>);
-    };
-
     return (
         <div className="App">
             <h1>Itzy's Bakery</h1>
 
-            {/* Render bakery items */}
-            {renderBakeryItems()}
-
             <div>
                 <h2>Cart</h2>
                 {/* Render cart items */}
-                Total Price: {totalPrice}
-                {renderCartItems()}
+                Total Price: ${totalPrice}
+                {cartItems.map((name, index) => (
+                    <p key={index}>{name}</p>
+                ))}
             </div>
+
+            {/* Render bakery items using BakeryItem component */}
+            {bakeryItems.map((item, index) => (
+                <BakeryItem key={index} item={item} addToCart={addToCart} />
+            ))}
         </div>
     );
 }
